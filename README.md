@@ -15,5 +15,7 @@ Istnieją 4 tabele, powiązane ze sobą kluczami obcymi:
 - Rasy
 - Typy właścicieli
 
+
 Pies jest połączony w relacji @ManyToOne z właścicielami i rasami
+
 Właściciel jest połączony w relacji @ManyToOne z typami właścicieli
