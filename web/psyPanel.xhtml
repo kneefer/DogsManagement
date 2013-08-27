@@ -1,0 +1,130 @@
+<ui:component xmlns="http://www.w3.org/1999/xhtml"
+              xmlns:p="http://primefaces.org/ui"
+              xmlns:h="http://xmlns.jcp.org/jsf/html"
+              xmlns:f="http://xmlns.jcp.org/jsf/core"
+              xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+>
+    <p:panel id="panelPsy" header="Lista psów" style="width:55%"  toggleable="false" toggleOrientation="vertical">
+        <h:form id="formPsy">
+            <!-- bug solving -->
+            <p:dialog></p:dialog>
+
+            <!-- ############## DATATABLE PSY ################# -->
+            <p:dataTable var="poz"
+                         value="#{piesView.piesModel}"
+                         paginator="true"
+                         rows="20"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                         paginatorPosition="bottom"
+                         editable="true"
+                         lazy="true"
+                         id="listaPsow"
+                         widgetVar="datatable"
+            >
+
+                <p:ajax event="rowEdit" listener="#{piesView.onEditPies}" update=":formWlasciciele:listaWlascicieli, :formRasy:listaRas" />
+
+                <!-- ID PROPERTY -->
+                <p:column headerText="Id" styleClass="idColumn">
+                    <h:outputText value="#{poz.id}"  />  
+                </p:column>
+
+                <!-- IMIE PROPERTY -->
+                <p:column headerText="Imię" filterBy="#{poz.imie}" sortBy="#{poz.imie}" style="width: 15%">  
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{poz.imie}" />  
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{poz.imie}" style=" width: 100%" class="imie"  />
+                        </f:facet>
+                    </p:cellEditor>  
+                </p:column>
+
+                <!-- RASA PROPERTY -->
+                <p:column headerText="Rasa" style="width: 33%">  
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{poz.IRasa.nazwaRasy}"  />
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:selectOneMenu value="#{poz.IRasa}" converter="#{rasaConverter}" >
+                                <f:selectItem itemValue="-1" itemLabel="" />
+                                <f:selectItems value="#{rasaView.rasy}"
+                                               var="ras"
+                                               itemLabel="#{ras.nazwaRasy}"
+                                               itemValue="#{ras}"
+                                />
+                            </h:selectOneMenu>
+                        </f:facet>
+                    </p:cellEditor>  
+                </p:column>
+
+                <!-- WŁAŚCICIEL PROPERTY -->
+                <p:column headerText="Właściciel" style="width: 25%"> 
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{poz.IWlasciciel.nazwisko} #{poz.IWlasciciel.imie}"  />
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:selectOneMenu value="#{poz.IWlasciciel}" converter="#{wlascicielConverter}" >
+                                <f:selectItem itemValue="-1" itemLabel="" />
+                                <f:selectItems value="#{wlascicielView.wlasciciele}"
+                                               var="wlasc"
+                                               itemLabel="#{wlasc.nazwisko} #{wlasc.imie}"
+                                               itemValue="#{wlasc}"
+                                />
+                            </h:selectOneMenu>
+                        </f:facet>
+                    </p:cellEditor>  
+                </p:column>
+
+                <!-- ROW EDITOR -->
+                <p:column styleClass="buttonRowEditorColumn">  
+                    <p:rowEditor  />  
+                </p:column>
+
+                <!-- DELETE BUTTON -->
+                <p:column styleClass="buttonDeleteColumn">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <p:commandButton iconPos="center"
+                                             icon="ui-icon-trash"
+                                             disabled="true"
+                                             styleClass="buttonDelete"
+                            />
+                        </f:facet>
+                        <f:facet name="input">
+                            <div style="text-align: center">
+                                <p:commandButton iconPos="center"
+                                                 icon="ui-icon-trash"
+                                                 process="@this"
+                                                 actionListener="#{piesView.usunPsa(poz)}"
+                                                 disabled="false"
+                                                 update="listaPsow, :formRasy:listaRas, :formWlasciciele:listaWlascicieli"
+                                                 styleClass="buttonDelete"
+                                /> 
+                            </div>
+                        </f:facet>
+                    </p:cellEditor>                          
+                </p:column>
+            </p:dataTable>
+
+            <!-- LOADING OVERLAY -->
+            <p:blockUI block="listaPsow" trigger="listaPsow">  
+                <ui:include src="loadingOverlay.xhtml" />
+            </p:blockUI> 
+
+            <!-- DODAJ NOWEGO PSA BUTTON -->
+            <p:commandButton process="@this"
+                             actionListener="#{piesView.dodajPsa()}"
+                             value="Dodaj nowego psa!"
+                             update="listaPsow, :formWlasciciele:listaWlascicieli, :formRasy:listaRas"
+                             oncomplete="editLastDatatableRow();"
+                             onclick="datatable.clearFilters();"
+                             icon="ui-icon-plusthick"
+                             styleClass="buttonAddRowInit"
+            />
+        </h:form>
+    </p:panel>
+</ui:component>

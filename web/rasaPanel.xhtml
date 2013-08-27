@@ -1,0 +1,151 @@
+<ui:component xmlns="http://www.w3.org/1999/xhtml"
+              xmlns:p="http://primefaces.org/ui"
+              xmlns:h="http://xmlns.jcp.org/jsf/html"
+              xmlns:f="http://xmlns.jcp.org/jsf/core"
+              xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+>
+    <p:panel id="panelRasy" header="Lista ras" style="width:43%" toggleable="true" toggleOrientation="vertical" collapsed="true" >
+        <!--<p:ajax event="toggle" listener="{viewMain.onToggleRasy()}" update="panelWlasciciele, panelTypyWlascicieli" />-->
+        <h:form id="formRasy">
+            <!-- bug solving -->
+            <p:dialog></p:dialog>
+
+            <!-- ############## DATATABLE RASY ################# -->
+            <p:dataTable var="poz"
+                         value="#{rasaView.rasaModel}"
+                         paginator="true"
+                         rows="10"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                         paginatorPosition="bottom"
+                         editable="true"
+                         lazy="true"
+                         id="listaRas"
+                         widgetVar="datatable2"
+            >
+
+                <p:ajax event="rowEdit" listener="#{rasaView.onEditRasa}" update=":formPsy:listaPsow, :formWlasciciele:listaWlascicieli" />
+                
+                <!-- ROW TOGGLER -->
+                <p:column style="width: 3%">
+                    <p:rowToggler  />
+                </p:column>
+                
+                <!-- ID PROPERTY -->
+                <p:column headerText="Id" styleClass="idColumn" >
+                    <h:outputText value="#{poz.id}" />  
+                </p:column>
+
+                <!-- NAZWA RASY PROPERTY -->
+                <p:column headerText="Nazwa rasy" filterBy="#{poz.nazwaRasy}" sortBy="#{poz.nazwaRasy}" style="width: 67%">  
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{poz.nazwaRasy}" />  
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{poz.nazwaRasy}" style=" width: 100%" class="nazwaRasy"  />
+                        </f:facet>
+                    </p:cellEditor>  
+                </p:column>
+                
+                <!-- ILOŚĆ PSÓW PROPERTY -->
+                <p:column headerText="Ilość" style="width: 5%; text-align: center">
+                    <h:outputText value="#{poz.piesCollection.size()}" />
+                </p:column>
+
+                <!-- ROW EDITOR -->
+                <p:column styleClass="buttonRowEditorColumn">  
+                    <p:rowEditor  />  
+                </p:column>
+
+                <!-- DELETE BUTTON -->
+                <p:column styleClass="buttonDeleteColumn">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <p:commandButton iconPos="center"
+                                             icon="ui-icon-trash"
+                                             disabled="true"
+                                             styleClass="buttonDelete"
+                            />
+                        </f:facet>
+                        <f:facet name="input">
+                            <div style="text-align: center">
+                                <p:commandButton iconPos="center"
+                                                 icon="ui-icon-trash"
+                                                 process="@this"
+                                                 actionListener="#{rasaView.usunRase(poz)}"
+                                                 update="listaRas, :formPsy:listaPsow, :formWlasciciele:listaWlascicieli"
+                                                 styleClass="buttonDelete"
+                                />
+                            </div>
+                        </f:facet>
+                    </p:cellEditor>                          
+                </p:column>
+                
+                <!-- ROW EXPANSION - PSY DANEJ RASY DATATABLE -->
+                <p:rowExpansion>
+                    <p:dataTable value="#{poz.piesCollection}"
+                                 var="exp"
+                                 scrollable="true"
+                                 scrollHeight="80"
+                                 id="expansionRasaTable"
+                                 styleClass="expansionDataTable"
+                    >
+                        <!-- ID PSA DANEJ RASY PROPERTY -->
+                        <p:column headerText="Id" styleClass="idColumn">
+                            <h:outputText value="#{exp.id}" />
+                        </p:column>
+                        
+                        <!-- IMIĘ PSA DANEJ RASY PROPERTY -->
+                        <p:column headerText="Imiona psów danej rasy" style="width:40%">
+                            <h:outputText value="#{exp.imie}" />
+                        </p:column>
+                        
+                        <!-- WŁAŚCICIEL PSA DANEJ RASY PROPERTY -->
+                        <p:column headerText="Właściciel" style="width: 50%">
+                            <h:outputText value="#{exp.IWlasciciel.nazwisko} #{exp.IWlasciciel.imie}" />
+                        </p:column>
+                    </p:dataTable>
+                </p:rowExpansion>
+                
+            </p:dataTable>
+            
+            <!-- DODAJ NOWĄ RASĘ BUTTON -->
+            <p:commandButton value="Dodaj nową rasę!"
+                             onclick="addRasaDialog.show();"
+                             icon="ui-icon-plusthick"
+                             styleClass="buttonAddRowInit"
+            />
+            
+            <!-- LOADING OVERLAY -->
+            <p:blockUI block="listaRas" trigger="listaRas">  
+                <ui:include src="loadingOverlay.xhtml" />
+            </p:blockUI> 
+        </h:form>
+        
+        <!-- NEW RASA DIALOG -->
+        <p:dialog widgetVar="addRasaDialog"
+                  appendToBody="true"
+                  resizable="false"
+                  draggable="false"
+                  hideEffect="fade"
+                  showEffect="fade"
+                  header="Dodawanie nowej rasy"
+        >
+            <h:form id="formDodajRase">  
+                <h:panelGrid columns="3" style="margin-bottom:10px">  
+                    <h:outputLabel for="nazwa_rasy" value="Nazwa rasy " />  
+                    <p:inputText id="nazwa_rasy" value="#{rasaView.nazwaNowejRasy}" />  
+                    <p:commandButton id="addRasaButton"
+                                     actionListener="#{rasaView.dodajRase()}"
+                                     value="Dodaj"
+                                     update=":formRasy:listaRas,
+                                             :formPsy:listaPsow"
+                                     oncomplete="addRasaDialog.hide();"
+                                     icon="ui-icon-plusthick"
+                                     styleClass="buttonAddRow"
+                    />
+                </h:panelGrid>
+            </h:form> 
+        </p:dialog>
+    </p:panel>
+</ui:component>

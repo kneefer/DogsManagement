@@ -1,0 +1,196 @@
+<ui:component xmlns="http://www.w3.org/1999/xhtml"
+              xmlns:p="http://primefaces.org/ui"
+              xmlns:h="http://xmlns.jcp.org/jsf/html"
+              xmlns:f="http://xmlns.jcp.org/jsf/core"
+              xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+              >
+    <p:panel id="panelWlasciciele" header="Lista właścicieli" style="width:43%" toggleable="true" toggleOrientation="vertical" collapsed="true" >
+        <!--p:ajax event="toggle" listener="{viewMain.onToggleWlasciciele()}" update="panelRasy, panelTypyWlascicieli" />-->
+        <h:form id="formWlasciciele">
+            <!-- bug solving -->
+            <p:dialog></p:dialog>
+
+            <!-- ############## DATATABLE RASY ################# -->
+            <p:dataTable var="poz"
+                         value="#{wlascicielView.wlascicielModel}"
+                         paginator="true"
+                         rows="10"
+                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                         paginatorPosition="bottom"
+                         editable="true"
+                         lazy="true"
+                         id="listaWlascicieli"
+                         widgetVar="datatable3"
+            >
+
+                <p:ajax event="rowEdit" listener="#{wlascicielView.onEditWlasciciel}" update=":formPsy:listaPsow, listaWlascicieli, :formRasy:listaRas" />
+
+                <!-- ROW TOGGLER -->
+                <p:column style="width: 3%">
+                    <p:rowToggler  />
+                </p:column>
+                
+                <!-- ID PROPERTY -->
+                <p:column headerText="Id" styleClass="idColumn">
+                    <h:outputText value="#{poz.id}"  />  
+                </p:column>
+
+                <!-- IMIE PROPERTY -->
+                <p:column headerText="Imię" filterBy="#{poz.imie}" sortBy="#{poz.imie}" style="width: 22%">  
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{poz.imie}" />  
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{poz.imie}" style=" width: 100%" class="imieWlasciciela"  />
+                        </f:facet>
+                    </p:cellEditor>  
+                </p:column>
+                
+                <!-- NAZWISKO PROPERTY -->
+                <p:column headerText="Nazwisko" filterBy="#{poz.nazwisko}" sortBy="#{poz.nazwisko}" style="width: 22%">  
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{poz.nazwisko}" />  
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:inputText value="#{poz.nazwisko}" style=" width: 100%" class="nazwiskoWlasciciela"  />
+                        </f:facet>
+                    </p:cellEditor>  
+                </p:column>
+                
+                <!-- TYP WŁAŚCICIELA PROPERTY -->
+                <p:column headerText="Typ właściciela" style="width: 23%">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <h:outputText value="#{poz.ITypWlasciciela.nazwaTypuWlasciciela}"  />
+                        </f:facet>
+                        <f:facet name="input">
+                            <h:selectOneMenu value="#{poz.ITypWlasciciela}" converter="#{typyWlascicieliConverter}" >
+                                <f:selectItem itemValue="-1" itemLabel="" />
+                                <f:selectItems value="#{typWlascicielaView.typyWlasciciela}"
+                                               var="typ"
+                                               itemLabel="#{typ.nazwaTypuWlasciciela}"
+                                               itemValue="#{typ}"
+                                />
+                            </h:selectOneMenu>
+                        </f:facet>
+                    </p:cellEditor>  
+                </p:column>
+                
+                <!-- ILOŚĆ PSÓW PROPERTY -->
+                <p:column headerText="Psy" style="width: 5%; text-align: center">
+                    <h:outputText value="#{poz.piesCollection.size()}" />
+                </p:column>
+
+                <!-- ROW EDITOR -->
+                <p:column styleClass="buttonRowEditorColumn">  
+                    <p:rowEditor  />  
+                </p:column>
+
+                <!-- DELETE BUTTON -->
+                <p:column styleClass="buttonDeleteColumn">
+                    <p:cellEditor>
+                        <f:facet name="output">
+                            <p:commandButton iconPos="center"
+                                             icon="ui-icon-trash"
+                                             disabled="true"
+                                             styleClass="buttonDelete"
+                            />
+                        </f:facet>
+                        <f:facet name="input">
+                            <div style="text-align: center">
+                                <p:commandButton iconPos="center"
+                                                 icon="ui-icon-trash"
+                                                 process="@this"
+                                                 actionListener="#{wlascicielView.usunWlasciciela(poz)}"
+                                                 disabled="false"
+                                                 update="listaWlascicieli, :formPsy:listaPsow"
+                                                 styleClass="buttonDelete"
+                                />
+                            </div>
+                        </f:facet>
+                    </p:cellEditor>                          
+                </p:column>
+                
+                <!-- ROW EXPANSION - PSY DANEGO WŁAŚCICIELA DATATABLE -->
+                <p:rowExpansion>
+                    <p:dataTable value="#{poz.piesCollection}"
+                                 var="exp"
+                                 scrollable="true"
+                                 scrollHeight="80"
+                                 id="expansionWlascicielTable"
+                                 styleClass="expansionDataTable"
+                    >
+                        <!-- ID PSA DANEGO WŁAŚCICIELA PROPERTY -->
+                        <p:column headerText="Id" styleClass="idColumn">
+                            <h:outputText value="#{exp.id}" />
+                        </p:column>
+                        
+                        <!-- IMIĘ PSA DANEGO WŁAŚCICIELA PROPERTY -->
+                        <p:column headerText="Imiona psów danego właściciela" style="width:40%">
+                            <h:outputText value="#{exp.imie}" />
+                        </p:column>
+                        
+                        <!-- RASA PSA DANEGO WŁAŚCICIELA PROPERTY -->
+                        <p:column headerText="Rasa" style="width: 50%">
+                            <h:outputText value="#{exp.IRasa.nazwaRasy}" />
+                        </p:column>
+                    </p:dataTable>
+                </p:rowExpansion>
+            </p:dataTable>
+            
+            <!-- DODAJ NOWEGO WŁAŚCICIELA BUTTON -->
+            <p:commandButton value="Dodaj nowego właściciela!"
+                             onclick="addWlascicielaDialog.show();"
+                             icon="ui-icon-plusthick"
+                             styleClass="buttonAddRowInit"
+            />
+            
+            <!-- LOADING OVERLAY -->
+            <p:blockUI block="listaWlascicieli" trigger="listaWlascicieli">  
+                <ui:include src="loadingOverlay.xhtml" />
+            </p:blockUI> 
+        </h:form>
+        
+        <!-- NEW WŁAŚCICIEL DIALOG -->
+        <p:dialog widgetVar="addWlascicielaDialog"
+                  appendToBody="true"
+                  resizable="false"
+                  draggable="false"
+                  hideEffect="fade"
+                  showEffect="fade"
+                  header="Dodawanie nowego właściciela"
+        >
+            <h:form id="formDodajWlasciciela">  
+                <h:panelGrid columns="2" style="margin-bottom:10px">  
+                    <h:outputLabel for="imie" value="Imię " />  
+                    <p:inputText id="imie" value="#{wlascicielView.nowyWlasciciel.imie}" /> 
+                    
+                    <h:outputLabel for="nazwisko" value="Nazwisko " />  
+                    <p:inputText id="nazwisko" value="#{wlascicielView.nowyWlasciciel.nazwisko}" />  
+                    
+                    <h:outputLabel for="typ_wlasc" value="Typ właściciela " />
+                    <h:selectOneMenu id="typ_wlasc" value="#{wlascicielView.nowyWlasciciel.ITypWlasciciela}" converter="#{typyWlascicieliConverter}" >
+                        <f:selectItem itemValue="-1" itemLabel="" />
+                        <f:selectItems value="#{typWlascicielaView.typyWlasciciela}"
+                                       var="typ"
+                                       itemLabel="#{typ.nazwaTypuWlasciciela}"
+                                       itemValue="#{typ}"
+                        />
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                
+                <p:commandButton id="addWlascicielButton"
+                                 actionListener="#{wlascicielView.dodajWlasciciela()}"
+                                 value="Dodaj"
+                                 update=":formWlasciciele:listaWlascicieli,
+                                         :formPsy:listaPsow"
+                                 oncomplete="addWlascicielaDialog.hide();"
+                                 icon="ui-icon-plusthick"
+                                 styleClass="buttonAddRow"
+                />
+            </h:form> 
+        </p:dialog>
+    </p:panel>
+</ui:component>

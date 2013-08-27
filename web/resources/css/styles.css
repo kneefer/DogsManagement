@@ -1,0 +1,88 @@
+/* 
+    Document   : Stylesheet
+    Created on : 2013-08-27, 23:45:30
+    Author     : Szymon Bartnik
+    Description: Główny arkusz stylów
+*/
+
+.ui-button-text {
+    padding: 0px !important;
+}
+
+.ui-datatable thead th, .ui-datatable tbody td, .ui-datatable tfoot td {
+    padding: 1px 5px;
+}
+
+.ui-widget {
+    font-size: 12px !important;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.ui-blockui-content {
+    width: 130px;
+}
+
+.header-footer {
+    text-align: center;
+    font-family: sans-serif;
+    font-size: 25px;
+    margin: 5px 0;
+    background: whitesmoke !important;
+}
+
+#panelPsy {
+    float: left;
+    margin-bottom: 5px;
+}
+
+#panelWlasciciele {
+    float: right;
+    margin-top: 5px;
+}
+
+#panelRasy {
+    float: right;
+}
+
+#panelTypyWlascicieli {
+    float: right;
+    margin: 5px 0;
+}
+
+.buttonDelete {
+    width: 100%;
+    padding: 0;
+}
+
+.buttonDeleteColumn {
+    width: 10%;
+}
+
+.buttonRowEditorColumn {
+    width: 10%;
+}
+
+.idColumn {
+    text-align: center;
+    width: 5%;
+}
+
+.expansionDataTable {
+    padding: 13px 15px;
+}
+
+.buttonAddRow {
+    padding: 2px 20px 2px 30px;
+    margin:0 auto;
+}
+
+.buttonAddRowInit {
+    padding: 2px 30px 2px 40px;
+    margin: 3px 0 0 0;
+}
+
+#footer {
+    clear: both;
+    text-align: center;
+    font-size: 15px;
+}
