@@ -1,5 +1,5 @@
 ===============
-avisoft.zadanie
+av.zadanie
 ===============
 
 Management Psów Hotelowych
