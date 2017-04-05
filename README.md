@@ -1,6 +1,5 @@
-===============
 Dogs Management
-===============
+=
 
 Management Psów Hotelowych
 
